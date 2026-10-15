@@ -1,3 +1,4 @@
+import time
 from typing import List, Optional
 from rich.markup import escape
 from textual.app import App, ComposeResult
@@ -26,7 +27,7 @@ class WorkApp(App):
         Binding("n", "new_item", "New Goal"),
         Binding("a", "new_item", "Add Goal", show=False),
         Binding("e", "edit_item", "Edit"),
-        Binding("d", "delete_item", "Delete"),
+        Binding("d", "press_d", "Delete (dd)"),
         Binding("delete", "delete_item", "Delete", show=False),
         Binding("q", "quit_app", "Quit"),
     ]
@@ -35,6 +36,7 @@ class WorkApp(App):
         super().__init__()
         self.omarchy = load_theme()
         self.last_theme_mtime = get_theme_mtime()
+        self.last_d_time: float = 0.0
         self.storage = Storage()
         self.goals: List[Goal] = []
         self.active_goal_idx: int = 0
@@ -56,7 +58,7 @@ class WorkApp(App):
                 yield Input(placeholder="+ New short-term goal... (Enter to save, Esc)", classes="inline-input", id="workspace-input")
 
         yield Static(
-            "↑↓ Move  •  Enter Open Workspace  •  Space Done  •  n New  •  e Edit  •  d Delete  •  Esc Back  •  q Quit",
+            "↑↓ Move  •  Enter Open Workspace  •  Space Done  •  n New  •  e Edit  •  dd Delete  •  Esc Back  •  q Quit",
             id="bottom-bar",
         )
 
@@ -311,6 +313,15 @@ class WorkApp(App):
                 inp.placeholder = "Edit short-term goal..."
                 inp.add_class("active")
                 inp.focus()
+
+    def action_press_d(self) -> None:
+        """Require pressing 'd' twice quickly ('dd') to delete."""
+        now = time.time()
+        if now - self.last_d_time < 0.5:
+            self.last_d_time = 0.0
+            self.action_delete_item()
+        else:
+            self.last_d_time = now
 
     def action_delete_item(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)

@@ -33,7 +33,7 @@ A super minimal, distraction-free, 2-pane task & workspace manager for the termi
 | <kbd>Space</kbd> | Toggle completed (<span style="color:#2a9d8f">✔</span> / <span style="color:#5c5c5c">◻</span>) | Workspace pane |
 | <kbd>n</kbd> or <kbd>a</kbd> | Add new item inline | Active pane |
 | <kbd>e</kbd> | Edit highlighted item inline | Active pane |
-| <kbd>d</kbd> or <kbd>Delete</kbd> | Delete highlighted item | Active pane |
+| <kbd>d</kbd><kbd>d</kbd> or <kbd>Delete</kbd> | Delete highlighted item (double-tap <kbd>d</kbd>) | Active pane |
 | <kbd>Tab</kbd> | Alternate between panes | Anywhere |
 | <kbd>q</kbd> | Quit | Anywhere |
 

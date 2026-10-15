@@ -55,7 +55,18 @@ async def test_work():
         assert pilot.app.query_one("#goals-list").has_focus
         print("[9] Escape canceled input cleanly.")
 
-        print("\nAll tests passed successfully!")
+        # Test dd double tap to delete
+        initial_goals_count = len(pilot.app.goals)
+        await pilot.press("d")  # single tap
+        await pilot.pause()
+        assert len(pilot.app.goals) == initial_goals_count
+        print("[10] Single 'd' tap safely did not delete.")
+        await pilot.press("d")  # quick second tap -> dd
+        await pilot.pause()
+        assert len(pilot.app.goals) == initial_goals_count - 1
+        print("[11] Quick 'dd' successfully deleted item!")
+
+        print("\nAll 11 tests passed successfully!")
 
 
 if __name__ == "__main__":
