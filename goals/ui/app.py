@@ -11,7 +11,7 @@ from textual.events import DescendantFocus
 from ..models import Workspace, Goal, GoalItem
 from ..storage import Storage
 from ..theme import load_theme, generate_css, get_theme_mtime
-from .widgets import GoalsListWidget, WorkspaceListWidget
+from .widgets import GoalsListWidget, WorkspaceListWidget, HelpScreen
 
 
 class GoalsApp(App):
@@ -34,6 +34,9 @@ class GoalsApp(App):
         Binding("shift+down", "move_item_down", "Move Down", show=False),
         Binding("K", "move_item_up", "Move Up", show=False),
         Binding("J", "move_item_down", "Move Down", show=False),
+        Binding("question_mark", "show_help", "Help"),
+        Binding("?", "show_help", "Help", show=False),
+        Binding("f1", "show_help", "Help", show=False),
         Binding("q", "quit_app", "Quit"),
 
         # Multi-window / Workspace Tabs (Herdr conventions)
@@ -112,7 +115,7 @@ class GoalsApp(App):
                 yield Input(placeholder="+ New short-term goal... (Enter to save, Esc)", classes="inline-input", id="workspace-input")
 
         yield Static(
-            "↑↓ Nav  •  Enter Open  •  Space Done  •  n/e/dd Item  •  Alt+1..9 Tabs  •  Alt+t/r/w Window  •  q Quit",
+            "[@click=app.show_help]? Help[/]  •  ↑↓ Nav  •  Enter Open  •  Space Done  •  n New  •  q Quit",
             id="bottom-bar",
         )
 
@@ -218,25 +221,24 @@ class GoalsApp(App):
         except Exception:
             return
 
-        accent = self.omarchy["accent"]
-        dark_bg = self.omarchy["dark_background"]
-        muted = self.omarchy["muted"]
+        accent = self.omarchy.get("accent", "#e63946")
+        dark_bg = self.omarchy.get("dark_background", "#080808")
+        selection = self.omarchy.get("selection", "#343d41")
+        fg = self.omarchy.get("foreground", "#f5f5f5")
 
         parts = []
         for idx, ws in enumerate(self.workspaces):
             num = idx + 1
             title = escape(ws.title)
             if idx == self.active_ws_idx:
-                # Active tab: Herdr panel_bg on accent background
-                parts.append(f"[@click=app.switch_tab({idx})][bold {dark_bg} on {accent}]  {num}:{title}  [/][/]")
+                # Active tab: Herdr panel_bg on accent background, clean uniform pill
+                parts.append(f"[@click=app.switch_tab({idx})][bold {dark_bg} on {accent}] {num}:{title} [/][/]")
             else:
-                # Inactive tab: muted foreground
-                parts.append(f"[@click=app.switch_tab({idx})][{muted}]  {num}:{title}  [/][/]")
+                # Inactive tab: clean uniform surface pill
+                parts.append(f"[@click=app.switch_tab({idx})][{fg} on {selection}] {num}:{title} [/][/]")
 
-        # Clickable [+] button at the end
-        parts.append(f"[@click=app.new_tab()][bold {accent}]  +  [/][/]")
-
-        tabs_widget.update(" ".join(parts))
+        # NO plus button! Clean 2-space gap between tabs
+        tabs_widget.update("  ".join(parts))
 
     def refresh_goals_list(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)
@@ -658,6 +660,12 @@ class GoalsApp(App):
         else:
             self.query_one("#workspace-list", WorkspaceListWidget).focus()
         self.update_pane_borders()
+
+    def action_show_help(self) -> None:
+        if isinstance(self.screen, HelpScreen):
+            self.screen.dismiss()
+        else:
+            self.push_screen(HelpScreen(self.omarchy))
 
     def action_quit_app(self) -> None:
         self.exit()

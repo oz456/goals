@@ -228,9 +228,37 @@ async def test_goals():
             assert pilot.app.workspaces[0].title == "Projects"
             print("[27] Alt+H successfully swapped active tab position!")
 
-            print("\nAll 27 integration tests passed successfully!")
+            # [28] Verify no plus button in tab bar
+            from goals.ui.widgets import HelpScreen
+            tabs_render = str(pilot.app.query_one("#tabs-header").render())
+            assert "+" not in tabs_render
+            print("[28] Verified tab bar has no bloat / no '+' button!")
+
+            # [29] Test '?' opens detailed Help modal
+            await pilot.press("question_mark")
+            await pilot.pause()
+            assert isinstance(pilot.app.screen, HelpScreen)
+            print("[29] '?' opened detailed HelpScreen modal!")
+
+            # [30] Test '?' toggles Help modal closed
+            await pilot.press("question_mark")
+            await pilot.pause()
+            assert not isinstance(pilot.app.screen, HelpScreen)
+            print("[30] '?' closed HelpScreen modal!")
+
+            # [31] Test 'Esc' closes Help modal
+            await pilot.press("question_mark")
+            await pilot.pause()
+            assert isinstance(pilot.app.screen, HelpScreen)
+            await pilot.press("escape")
+            await pilot.pause()
+            assert not isinstance(pilot.app.screen, HelpScreen)
+            print("[31] 'Esc' closed HelpScreen modal!")
+
+            print("\nAll 31 integration tests passed successfully!")
 
 
 if __name__ == "__main__":
     asyncio.run(test_goals())
+
 

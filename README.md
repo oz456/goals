@@ -24,9 +24,10 @@ A super minimal, distraction-free, 2-pane goal & workspace manager for the termi
   - <kbd>Alt</kbd> + <kbd>1..9</kbd> to jump directly to window tab.
   - <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> (or <kbd>[</kbd> / <kbd>]</kbd>) to switch window tabs.
   - <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> (or <kbd>Alt</kbd>+<kbd>H</kbd>/<kbd>L</kbd>) to rearrange window tabs.
-  - <kbd>Alt</kbd> + <kbd>t</kbd> (or click <kbd>[+]</kbd>) to create a new window.
+  - <kbd>Alt</kbd> + <kbd>t</kbd> to create a new window tab.
   - <kbd>Alt</kbd> + <kbd>r</kbd> to rename the active window.
   - <kbd>Alt</kbd> + <kbd>w</kbd> to close the active window.
+  - <kbd>?</kbd> to view full keyboard shortcuts cheatsheet.
   - <kbd>q</kbd> to quit.
 
 ---
@@ -35,6 +36,7 @@ A super minimal, distraction-free, 2-pane goal & workspace manager for the termi
 
 | Key | Action | Context |
 | :--- | :--- | :--- |
+| <kbd>?</kbd> | **Open shortcuts cheatsheet modal** | Anywhere |
 | <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>j</kbd> / <kbd>k</kbd> | Move selection up / down | Active pane |
 | <kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>K</kbd> / <kbd>J</kbd> | **Rearrange / move item up or down** | Active pane |
 | <kbd>Enter</kbd> or <kbd>→</kbd> / <kbd>l</kbd> | **Open Workspace** (step into right pane) | Major Goals pane |
@@ -44,10 +46,10 @@ A super minimal, distraction-free, 2-pane goal & workspace manager for the termi
 | <kbd>e</kbd> | Edit highlighted item inline | Active pane |
 | <kbd>d</kbd><kbd>d</kbd> or <kbd>Delete</kbd> | Delete highlighted item (double-tap <kbd>d</kbd>) | Active pane |
 | <kbd>Tab</kbd> | Alternate between panes | Anywhere |
+| <kbd>Alt</kbd> + <kbd>t</kbd> / <kbd>Ctrl</kbd> + <kbd>t</kbd> | **New window tab** | Anywhere |
 | <kbd>Alt</kbd> + <kbd>1..9</kbd> | Jump directly to window 1..9 | Top tab bar |
 | <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> or <kbd>[</kbd> / <kbd>]</kbd> | Switch previous / next window tab | Anywhere |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> or <kbd>Alt</kbd>+<kbd>H</kbd>/<kbd>L</kbd> | **Rearrange active window tab left / right** | Anywhere |
-| <kbd>Alt</kbd> + <kbd>t</kbd> / <kbd>Ctrl</kbd> + <kbd>t</kbd> or click <kbd>[+]</kbd> | **New window tab** | Anywhere |
 | <kbd>Alt</kbd> + <kbd>r</kbd> / <kbd>Ctrl</kbd> + <kbd>r</kbd> | **Rename active window tab** | Anywhere |
 | <kbd>Alt</kbd> + <kbd>w</kbd> / <kbd>Ctrl</kbd> + <kbd>w</kbd> | **Close active window tab** | Anywhere |
 | <kbd>q</kbd> | Quit | Anywhere |
