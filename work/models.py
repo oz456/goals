@@ -1,125 +1,47 @@
 from dataclasses import dataclass, field, asdict
-from datetime import datetime, date
-from enum import IntEnum
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any
 import uuid
 
 
-class Priority(IntEnum):
-    NONE = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
-    @property
-    def label(self) -> str:
-        return {
-            Priority.NONE: "None",
-            Priority.LOW: "Low",
-            Priority.MEDIUM: "Medium",
-            Priority.HIGH: "High",
-        }[self]
-
-    @property
-    def badge(self) -> str:
-        return {
-            Priority.NONE: "",
-            Priority.LOW: "🔵 Low",
-            Priority.MEDIUM: "🟡 Med",
-            Priority.HIGH: "🔴 High",
-        }[self]
-
-    @property
-    def color(self) -> str:
-        return {
-            Priority.NONE: "dim",
-            Priority.LOW: "#89b4fa",
-            Priority.MEDIUM: "#f9e2af",
-            Priority.HIGH: "#f38ba8",
-        }[self]
-
-
 @dataclass
-class Subtask:
-    title: str
+class GoalItem:
+    """A short-term, specific goal / action step."""
+    text: str
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
-    completed: bool = False
+    done: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Subtask":
+    def from_dict(cls, data: Dict[str, Any]) -> "GoalItem":
         return cls(
             id=data.get("id", uuid.uuid4().hex[:8]),
-            title=data.get("title", ""),
-            completed=data.get("completed", False),
+            text=data.get("text", ""),
+            done=data.get("done", False),
         )
 
 
 @dataclass
-class Task:
+class Goal:
+    """A major goal with its own focused workspace."""
     title: str
-    project_id: str
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
-    completed: bool = False
-    priority: Priority = Priority.NONE
-    due_date: Optional[str] = None  # Stored as YYYY-MM-DD
-    notes: str = ""
-    subtasks: List[Subtask] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    items: List[GoalItem] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "project_id": self.project_id,
             "title": self.title,
-            "completed": self.completed,
-            "priority": int(self.priority),
-            "due_date": self.due_date,
-            "notes": self.notes,
-            "subtasks": [s.to_dict() for s in self.subtasks],
-            "created_at": self.created_at,
+            "items": [item.to_dict() for item in self.items],
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Task":
-        subtasks_raw = data.get("subtasks", [])
-        subtasks = [Subtask.from_dict(s) for s in subtasks_raw]
-        priority_val = data.get("priority", 0)
-        try:
-            priority = Priority(priority_val)
-        except ValueError:
-            priority = Priority.NONE
-
+    def from_dict(cls, data: Dict[str, Any]) -> "Goal":
+        raw_items = data.get("items", [])
+        items = [GoalItem.from_dict(it) for it in raw_items]
         return cls(
             id=data.get("id", uuid.uuid4().hex[:8]),
-            project_id=data.get("project_id", "inbox"),
-            title=data.get("title", "Untitled Task"),
-            completed=data.get("completed", False),
-            priority=priority,
-            due_date=data.get("due_date"),
-            notes=data.get("notes", ""),
-            subtasks=subtasks,
-            created_at=data.get("created_at", datetime.now().isoformat()),
-        )
-
-
-@dataclass
-class Project:
-    name: str
-    id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
-    icon: str = "📁"
-    color: str = "#89b4fa"
-
-    def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Project":
-        return cls(
-            id=data.get("id", uuid.uuid4().hex[:8]),
-            name=data.get("name", "New Project"),
-            icon=data.get("icon", "📁"),
-            color=data.get("color", "#89b4fa"),
+            title=data.get("title", "Untitled Goal"),
+            items=items,
         )

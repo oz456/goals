@@ -1,47 +1,47 @@
-# Work
+# Work / Toru (取る)
 
-An intuitive, modern, dual-pane project & task manager for the terminal. Built with [Textual](https://textual.textualize.io/).
-
----
-
-## 🚀 Features
-
-- **Intuitive Controls First**: Both arrow keys (<kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd>) and Vim keys (<kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd>) work everywhere out of the box.
-- **Full Mouse Support**: Click to select projects or tasks, double-click to edit, scroll with wheel.
-- **Dual-Pane Layout**:
-  - **Left**: Smart Views (*All Tasks*, *Today & Overdue*, *High Priority*, *Completed*) + Custom Projects with real-time pending task counts.
-  - **Right**: Tasks sorted intelligently (uncompleted first, high priority first, upcoming due dates first).
-- **Subtasks & Checklists**: Press <kbd>s</kbd> on any task to add and check off subtasks with mini progress counters (`[1/3]`).
-- **Human-Friendly Due Dates**: Supports natural language dates: `today`, `tomorrow`, `friday`, `2d`, `1w`, or `YYYY-MM-DD`.
-- **Urgency / Priority System**: One-key instant priority setting (`1`=🔴High, `2`=🟡Med, `3`=🔵Low, `4`=⚪None).
-- **Live Search & Filter**: Press <kbd>/</kbd> to filter across tasks instantly.
-- **Always-Visible Hotkeys**: Never memorize obscure commands; footer hints guide you at all times.
+A super minimal, distraction-free, 2-pane task & workspace manager for the terminal, styled natively for **Omarchy**.
 
 ---
 
-## ⌨️ Quick Reference
+## 🎨 Philosophy
 
-| Key | Action |
-| :--- | :--- |
-| <kbd>Tab</kbd> or <kbd>←</kbd> / <kbd>→</kbd> | Switch between **Projects** and **Tasks** panes |
-| <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>j</kbd> / <kbd>k</kbd> | Move cursor up / down |
-| <kbd>Space</kbd> | Toggle task complete (<span style="color:green">✔</span> / <span style="color:gray">◻</span>) |
-| <kbd>n</kbd> or <kbd>a</kbd> | Add new task (or new project if focused on left pane) |
-| <kbd>e</kbd> or <kbd>Enter</kbd> | Edit highlighted task (or rename project) |
-| <kbd>d</kbd> or <kbd>Delete</kbd> | Delete highlighted task (or project) |
-| <kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> / <kbd>4</kbd> | Set priority (1=High, 2=Med, 3=Low, 4=None) |
-| <kbd>p</kbd> | Cycle priority |
-| <kbd>t</kbd> | Quick due date dialog (`today`, `tomorrow`, `3d`, etc.) |
-| <kbd>s</kbd> | Manage subtasks |
-| <kbd>/</kbd> | Open live search & filter |
-| <kbd>?</kbd> | Open help cheatsheet |
-| <kbd>q</kbd> | Quit cleanly |
+- **Zero Bloat**: No complicated priority tags, no overdue alarms, no nested clutter.
+- **Pure 2-Pane Flow**:
+  - **Left Pane**: Your **Major Goals** (e.g. *Launch Product*, *Health*, *Learning*).
+  - **Right Pane**: The dedicated **Workspace** for the selected goal with immediate, short-term actionable steps.
+- **Omarchy Native**: Automatically adapts to your active Omarchy theme colors (`colors.toml`).
+- **Keyboard-First & Fluid**:
+  - <kbd>↑</kbd> / <kbd>↓</kbd> (or <kbd>j</kbd>/<kbd>k</kbd>) to move.
+  - <kbd>Enter</kbd> to step directly into the goal's workspace.
+  - <kbd>Esc</kbd> to step back out to your major goals.
+  - <kbd>Space</kbd> to check off a goal.
+  - <kbd>n</kbd> to create a new goal or step inline (no annoying popups).
+  - <kbd>e</kbd> to edit.
+  - <kbd>d</kbd> or <kbd>Delete</kbd> to remove.
+  - <kbd>q</kbd> to quit.
+
+---
+
+## ⌨️ Controls
+
+| Key | Action | Context |
+| :--- | :--- | :--- |
+| <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>j</kbd> / <kbd>k</kbd> | Move selection up / down | Anywhere |
+| <kbd>Enter</kbd> or <kbd>→</kbd> / <kbd>l</kbd> | **Open Workspace** (step into right pane) | Major Goals pane |
+| <kbd>Esc</kbd> or <kbd>←</kbd> / <kbd>h</kbd> | **Back to Goals** (step back out to left pane) | Workspace pane |
+| <kbd>Space</kbd> | Toggle completed (<span style="color:#2a9d8f">✔</span> / <span style="color:#5c5c5c">◻</span>) | Workspace pane |
+| <kbd>n</kbd> or <kbd>a</kbd> | Add new item inline | Active pane |
+| <kbd>e</kbd> | Edit highlighted item inline | Active pane |
+| <kbd>d</kbd> or <kbd>Delete</kbd> | Delete highlighted item | Active pane |
+| <kbd>Tab</kbd> | Alternate between panes | Anywhere |
+| <kbd>q</kbd> | Quit | Anywhere |
 
 ---
 
 ## 💾 Storage
 
-All your data is saved automatically and atomically as clean JSON in:
+Goals are saved automatically and atomically as clean JSON at:
 ```
-~/.local/share/work/data.json
+~/.local/share/work/goals.json
 ```

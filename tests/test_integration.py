@@ -1,6 +1,7 @@
 import asyncio
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from work.ui.app import WorkApp
 
@@ -8,85 +9,53 @@ from work.ui.app import WorkApp
 async def test_work():
     app = WorkApp()
     async with app.run_test() as pilot:
-        print("[1] Work app mounted successfully!")
+        print("[1] Work (Toru) app mounted with Omarchy theme!")
 
-        # Verify initial widgets
-        assert pilot.app.query_one("#projects-list") is not None
-        assert pilot.app.query_one("#tasks-list") is not None
-        print("[2] Projects and Tasks lists found.")
+        # Verify panes
+        assert pilot.app.query_one("#goals-list") is not None
+        assert pilot.app.query_one("#workspace-list") is not None
+        assert pilot.app.query_one("#goals-list").has_focus
+        print("[2] Dual panes found, starting focus on Major Goals.")
 
-        # Test space to toggle task
-        target_task = pilot.app.get_highlighted_task()
-        initial_completed = target_task.completed
+        # Test down arrow moves through major goals
+        assert pilot.app.active_goal_idx == 0
+        await pilot.press("down")
+        assert pilot.app.active_goal_idx == 1
+        print("[3] Down arrow navigated to next major goal.")
+
+        await pilot.press("up")
+        assert pilot.app.active_goal_idx == 0
+        print("[4] Up arrow navigated back to first goal.")
+
+        # Test Enter goes INTO the workspace
+        await pilot.press("enter")
+        assert pilot.app.query_one("#workspace-list").has_focus
+        print("[5] Enter successfully opened workspace!")
+
+        # Test Space toggles completion in workspace
+        current_goal = pilot.app.get_current_goal()
+        first_item_done = current_goal.items[0].done
         await pilot.press("space")
-        updated_task = next(t for t in pilot.app.tasks if t.id == target_task.id)
-        assert updated_task.completed != initial_completed
-        print(f"[3] Space toggled task completion: {initial_completed} -> {updated_task.completed}")
+        assert current_goal.items[0].done != first_item_done
+        print(f"[6] Space toggled short-term goal: {first_item_done} -> {current_goal.items[0].done}")
 
         # Toggle back
-        target_task.completed = initial_completed
-        pilot.app.refresh_tasks_list()
+        await pilot.press("space")
 
-        # Test priority setting with '1' (High)
-        await pilot.press("1")
-        assert pilot.app.get_highlighted_task().priority.name == "HIGH"
-        print("[4] Priority 1 (High) set successfully.")
-
-        # Test priority setting with '2' (Medium)
-        await pilot.press("2")
-        assert pilot.app.get_highlighted_task().priority.name == "MEDIUM"
-        print("[5] Priority 2 (Medium) set successfully.")
-
-        # Test down arrow navigation
-        first_idx = pilot.app.query_one("#tasks-list").highlighted
-        await pilot.press("down")
-        second_idx = pilot.app.query_one("#tasks-list").highlighted
-        assert second_idx == first_idx + 1
-        print(f"[6] Down arrow navigated successfully: {first_idx} -> {second_idx}")
-
-        # Test 'k' vim up navigation
-        await pilot.press("k")
-        back_idx = pilot.app.query_one("#tasks-list").highlighted
-        assert back_idx == first_idx
-        print(f"[7] Vim 'k' navigated back up: {second_idx} -> {back_idx}")
-
-        # Test Tab to switch pane
-        await pilot.press("tab")
-        assert pilot.app.query_one("#projects-list").has_focus
-        print("[8] Tab successfully switched focus to Projects pane.")
-
-        # Test left arrow / right arrow pane navigation
-        await pilot.press("right")
-        assert pilot.app.query_one("#tasks-list").has_focus
-        print("[9] Right arrow successfully switched focus to Tasks pane.")
-
-        await pilot.press("left")
-        assert pilot.app.query_one("#projects-list").has_focus
-        print("[10] Left arrow successfully switched focus to Projects pane.")
-
-        await pilot.press("tab")  # back to tasks
-
-        # Test Help modal
-        await pilot.press("question_mark")
-        await pilot.pause()
-        assert len(pilot.app.screen_stack) > 1  # Modal is active
-        print("[11] Help modal displayed.")
+        # Test Escape goes BACK to Major Goals pane
         await pilot.press("escape")
-        await pilot.pause()
-        assert len(pilot.app.screen_stack) == 1
-        print("[12] Help modal dismissed.")
+        assert pilot.app.query_one("#goals-list").has_focus
+        print("[7] Escape stepped back out to Major Goals.")
 
-        # Test Search / Filter
-        await pilot.press("slash")
-        await pilot.pause()
-        assert pilot.app.query_one("#filter-input").has_focus
-        print("[13] Filter input opened on '/'")
+        # Test inline new goal creation
+        await pilot.press("n")
+        assert pilot.app.query_one("#goals-input").has_focus
+        print("[8] 'n' opened inline goal input.")
         await pilot.press("escape")
-        await pilot.pause()
-        assert not pilot.app.query_one("#filter-input").has_focus
-        print("[14] Filter closed on Escape.")
+        assert pilot.app.query_one("#goals-list").has_focus
+        print("[9] Escape canceled input cleanly.")
 
-        print("\nAll 14 automated tests passed perfectly!")
+        print("\nAll tests passed successfully!")
 
 
 if __name__ == "__main__":
