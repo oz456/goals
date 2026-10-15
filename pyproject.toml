@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toru"
+version = "0.1.0"
+description = "Intuitive dual-pane project & task manager for the terminal"
+readme = "README.md"
+authors = [{ name = "Omni" }]
+dependencies = [
+    "textual>=0.50.0",
+    "python-dateutil>=2.8.2",
+]
+requires-python = ">=3.9"
+
+[project.scripts]
+toru = "toru.cli:main"
