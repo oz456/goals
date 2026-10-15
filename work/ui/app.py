@@ -98,7 +98,7 @@ class WorkApp(App):
         self.screen.styles.color = fg
 
         try:
-            self.query_one("#top-bar").styles.background = dark_bg
+            self.query_one("#top-bar").styles.background = "transparent"
             self.query_one("#top-bar").styles.color = muted
             self.query_one("#top-brand").styles.color = accent
 
@@ -110,15 +110,15 @@ class WorkApp(App):
 
             self.query_one("#workspace-header").styles.border_bottom = ("solid", lighter_bg)
 
-            self.query_one("#goals-input").styles.background = dark_bg
+            self.query_one("#goals-input").styles.background = bg
             self.query_one("#goals-input").styles.border = ("tall", accent)
             self.query_one("#goals-input").styles.color = fg
 
-            self.query_one("#workspace-input").styles.background = dark_bg
+            self.query_one("#workspace-input").styles.background = bg
             self.query_one("#workspace-input").styles.border = ("tall", accent)
             self.query_one("#workspace-input").styles.color = fg
 
-            self.query_one("#bottom-bar").styles.background = dark_bg
+            self.query_one("#bottom-bar").styles.background = "transparent"
             self.query_one("#bottom-bar").styles.color = muted
 
             self.update_pane_borders()

@@ -52,10 +52,10 @@ def generate_css(theme: Dict[str, str]) -> str:
     }
 
     #top-bar {
-        height: 2;
+        height: 1;
         dock: top;
-        background: #080808;
-        padding: 0 2;
+        background: transparent;
+        padding: 0 1;
         content-align: left middle;
     }
 
@@ -109,7 +109,7 @@ def generate_css(theme: Dict[str, str]) -> str:
     .inline-input {
         height: 3;
         dock: bottom;
-        background: #080808;
+        background: #0d0d0d;
         border: tall #e63946;
         color: #f5f5f5;
         display: none;
@@ -123,9 +123,9 @@ def generate_css(theme: Dict[str, str]) -> str:
     #bottom-bar {
         height: 1;
         dock: bottom;
-        background: #080808;
+        background: transparent;
         color: #5c5c5c;
-        padding: 0 2;
+        padding: 0 1;
         text-align: center;
     }
     """
