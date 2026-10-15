@@ -14,7 +14,7 @@ from ..theme import load_theme, generate_css, get_theme_mtime
 from .widgets import GoalsListWidget, WorkspaceListWidget
 
 
-class WorkApp(App):
+class GoalsApp(App):
     """Super clean, minimal 2-pane goal & workspace manager following Omarchy themes."""
 
     CSS = generate_css(load_theme())
@@ -48,7 +48,7 @@ class WorkApp(App):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top-bar"):
-            yield Static("toru", id="top-brand")
+            yield Static("goals", id="top-brand")
 
         with Horizontal(id="main-container"):
             with Vertical(id="goals-pane"):

@@ -3,16 +3,15 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "work"
+name = "goals"
 version = "0.1.0"
-description = "Intuitive dual-pane project & task manager for the terminal"
+description = "Super clean, minimal 2-pane goal & workspace manager for the terminal"
 readme = "README.md"
 authors = [{ name = "Omni" }]
 dependencies = [
     "textual>=0.50.0",
-    "python-dateutil>=2.8.2",
 ]
 requires-python = ">=3.9"
 
 [project.scripts]
-work = "work.cli:main"
+goals = "goals.cli:main"

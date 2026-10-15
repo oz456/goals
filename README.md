@@ -1,6 +1,6 @@
-# Work / Toru (取る)
+# Goals
 
-A super minimal, distraction-free, 2-pane task & workspace manager for the terminal, styled natively for **Omarchy**.
+A super minimal, distraction-free, 2-pane goal & workspace manager for the terminal, styled natively for **Omarchy**.
 
 ---
 
@@ -13,12 +13,13 @@ A super minimal, distraction-free, 2-pane task & workspace manager for the termi
 - **Omarchy Native**: Automatically adapts to your active Omarchy theme colors (`colors.toml`).
 - **Keyboard-First & Fluid**:
   - <kbd>↑</kbd> / <kbd>↓</kbd> (or <kbd>j</kbd>/<kbd>k</kbd>) to move.
+  - <kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> (or <kbd>K</kbd>/<kbd>J</kbd>) to rearrange items up or down.
   - <kbd>Enter</kbd> to step directly into the goal's workspace.
   - <kbd>Esc</kbd> to step back out to your major goals.
   - <kbd>Space</kbd> to check off a goal.
   - <kbd>n</kbd> to create a new goal or step inline (no annoying popups).
   - <kbd>e</kbd> to edit.
-  - <kbd>d</kbd> or <kbd>Delete</kbd> to remove.
+  - <kbd>d</kbd><kbd>d</kbd> to remove.
   - <kbd>q</kbd> to quit.
 
 ---
@@ -44,5 +45,5 @@ A super minimal, distraction-free, 2-pane task & workspace manager for the termi
 
 Goals are saved automatically and atomically as clean JSON at:
 ```
-~/.local/share/work/goals.json
+~/.local/share/goals/goals.json
 ```

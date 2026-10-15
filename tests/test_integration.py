@@ -4,12 +4,12 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from work.ui.app import WorkApp
-from work.models import Goal, GoalItem
-from work.storage import Storage
+from goals.ui.app import GoalsApp
+from goals.models import Goal, GoalItem
+from goals.storage import Storage
 
 
-async def test_work():
+async def test_goals():
     with tempfile.TemporaryDirectory() as tmpdir:
         test_file = Path(tmpdir) / "test_goals.json"
         storage = Storage(test_file)
@@ -32,11 +32,11 @@ async def test_work():
         ]
         storage.save(initial_goals)
 
-        app = WorkApp()
+        app = GoalsApp()
         app.storage = storage
 
         async with app.run_test() as pilot:
-            print("[1] Work (Toru) app mounted with Omarchy theme!")
+            print("[1] Goals app mounted with Omarchy theme!")
 
             # Verify panes
             assert pilot.app.query_one("#goals-list") is not None
@@ -122,4 +122,4 @@ async def test_work():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_work())
+    asyncio.run(test_goals())

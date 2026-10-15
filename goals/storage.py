@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import List
 from .models import Goal, GoalItem
 
-DATA_DIR = Path.home() / ".local" / "share" / "work"
+DATA_DIR = Path.home() / ".local" / "share" / "goals"
 DATA_FILE = DATA_DIR / "goals.json"
+OLD_WORK_FILE = Path.home() / ".local" / "share" / "work" / "goals.json"
 
 
 def get_default_goals() -> List[Goal]:
@@ -36,6 +37,16 @@ class Storage:
 
     def load(self) -> List[Goal]:
         if not self.path.exists():
+            if OLD_WORK_FILE.exists():
+                try:
+                    with open(OLD_WORK_FILE, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    goals = [Goal.from_dict(g) for g in data]
+                    if goals:
+                        self.save(goals)
+                        return goals
+                except Exception:
+                    pass
             goals = get_default_goals()
             self.save(goals)
             return goals
