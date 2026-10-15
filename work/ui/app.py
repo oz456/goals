@@ -29,6 +29,10 @@ class WorkApp(App):
         Binding("e", "edit_item", "Edit"),
         Binding("d", "press_d", "Delete (dd)"),
         Binding("delete", "delete_item", "Delete", show=False),
+        Binding("shift+up", "move_item_up", "Move Up", show=False),
+        Binding("shift+down", "move_item_down", "Move Down", show=False),
+        Binding("K", "move_item_up", "Move Up", show=False),
+        Binding("J", "move_item_down", "Move Down", show=False),
         Binding("q", "quit_app", "Quit"),
     ]
 
@@ -58,7 +62,7 @@ class WorkApp(App):
                 yield Input(placeholder="+ New short-term goal... (Enter to save, Esc)", classes="inline-input", id="workspace-input")
 
         yield Static(
-            "↑↓ Move  •  Enter Open Workspace  •  Space Done  •  n New  •  e Edit  •  dd Delete  •  Esc Back  •  q Quit",
+            "↑↓ Select  •  Shift+↑↓ Move  •  Enter Open  •  Space Done  •  n New  •  e Edit  •  dd Delete  •  Esc Back  •  q Quit",
             id="bottom-bar",
         )
 
@@ -270,6 +274,54 @@ class WorkApp(App):
             self.storage.save(self.goals)
             self.refresh_workspace_list()
             self.refresh_goals_list()
+
+    def action_move_item_up(self) -> None:
+        """Move highlighted item up in the active pane."""
+        g_list = self.query_one("#goals-list", GoalsListWidget)
+        if g_list.has_focus:
+            idx = self.active_goal_idx
+            if idx > 0 and len(self.goals) > 1:
+                self.goals[idx], self.goals[idx - 1] = self.goals[idx - 1], self.goals[idx]
+                self.active_goal_idx = idx - 1
+                self.storage.save(self.goals)
+                self.refresh_goals_list()
+                g_list.highlighted = idx - 1
+                self.refresh_workspace_list()
+        else:
+            current_goal = self.get_current_goal()
+            if not current_goal or not current_goal.items:
+                return
+            w_list = self.query_one("#workspace-list", WorkspaceListWidget)
+            idx = w_list.highlighted
+            if idx is not None and idx > 0:
+                current_goal.items[idx], current_goal.items[idx - 1] = current_goal.items[idx - 1], current_goal.items[idx]
+                self.storage.save(self.goals)
+                self.refresh_workspace_list()
+                w_list.highlighted = idx - 1
+
+    def action_move_item_down(self) -> None:
+        """Move highlighted item down in the active pane."""
+        g_list = self.query_one("#goals-list", GoalsListWidget)
+        if g_list.has_focus:
+            idx = self.active_goal_idx
+            if idx < len(self.goals) - 1 and len(self.goals) > 1:
+                self.goals[idx], self.goals[idx + 1] = self.goals[idx + 1], self.goals[idx]
+                self.active_goal_idx = idx + 1
+                self.storage.save(self.goals)
+                self.refresh_goals_list()
+                g_list.highlighted = idx + 1
+                self.refresh_workspace_list()
+        else:
+            current_goal = self.get_current_goal()
+            if not current_goal or not current_goal.items:
+                return
+            w_list = self.query_one("#workspace-list", WorkspaceListWidget)
+            idx = w_list.highlighted
+            if idx is not None and idx < len(current_goal.items) - 1:
+                current_goal.items[idx], current_goal.items[idx + 1] = current_goal.items[idx + 1], current_goal.items[idx]
+                self.storage.save(self.goals)
+                self.refresh_workspace_list()
+                w_list.highlighted = idx + 1
 
     def action_new_item(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)

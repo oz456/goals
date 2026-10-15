@@ -11,10 +11,20 @@ class GoalsListWidget(OptionList):
         Binding("enter", "enter_workspace", "Enter Workspace", show=False),
         Binding("right", "enter_workspace", "Enter Workspace", show=False),
         Binding("l", "enter_workspace", "Enter Workspace", show=False),
+        Binding("shift+up", "move_item_up", "Move Goal Up", show=False),
+        Binding("shift+down", "move_item_down", "Move Goal Down", show=False),
+        Binding("K", "move_item_up", "Move Goal Up", show=False),
+        Binding("J", "move_item_down", "Move Goal Down", show=False),
     ]
 
     def action_enter_workspace(self) -> None:
         self.app.action_enter_workspace()
+
+    def action_move_item_up(self) -> None:
+        self.app.action_move_item_up()
+
+    def action_move_item_down(self) -> None:
+        self.app.action_move_item_down()
 
 
 class WorkspaceListWidget(OptionList):
@@ -26,7 +36,17 @@ class WorkspaceListWidget(OptionList):
         Binding("escape", "exit_workspace", "Back to Goals", show=False),
         Binding("left", "exit_workspace", "Back to Goals", show=False),
         Binding("h", "exit_workspace", "Back to Goals", show=False),
+        Binding("shift+up", "move_item_up", "Move Goal Up", show=False),
+        Binding("shift+down", "move_item_down", "Move Goal Down", show=False),
+        Binding("K", "move_item_up", "Move Goal Up", show=False),
+        Binding("J", "move_item_down", "Move Goal Down", show=False),
     ]
 
     def action_exit_workspace(self) -> None:
         self.app.action_exit_workspace()
+
+    def action_move_item_up(self) -> None:
+        self.app.action_move_item_up()
+
+    def action_move_item_down(self) -> None:
+        self.app.action_move_item_down()

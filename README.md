@@ -28,6 +28,7 @@ A super minimal, distraction-free, 2-pane task & workspace manager for the termi
 | Key | Action | Context |
 | :--- | :--- | :--- |
 | <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>j</kbd> / <kbd>k</kbd> | Move selection up / down | Anywhere |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> or <kbd>K</kbd> / <kbd>J</kbd> | **Rearrange / move item up or down** | Active pane |
 | <kbd>Enter</kbd> or <kbd>→</kbd> / <kbd>l</kbd> | **Open Workspace** (step into right pane) | Major Goals pane |
 | <kbd>Esc</kbd> or <kbd>←</kbd> / <kbd>h</kbd> | **Back to Goals** (step back out to left pane) | Workspace pane |
 | <kbd>Space</kbd> | Toggle completed (<span style="color:#2a9d8f">✔</span> / <span style="color:#5c5c5c">◻</span>) | Workspace pane |
