@@ -56,12 +56,25 @@ def generate_css(theme: Dict[str, str]) -> str:
         dock: top;
         background: transparent;
         padding: 0 1;
-        content-align: left middle;
     }
 
-    #top-brand {
-        text-style: bold;
-        color: #e63946;
+    #tabs-header {
+        width: 100%;
+        background: transparent;
+    }
+
+    #tab-input {
+        dock: top;
+        height: 3;
+        margin: 0 1 1 1;
+        background: #0d0d0d;
+        border: tall #e63946;
+        color: #f5f5f5;
+        display: none;
+    }
+
+    #tab-input.active {
+        display: block;
     }
 
     #main-container {
@@ -127,5 +140,6 @@ def generate_css(theme: Dict[str, str]) -> str:
         color: #5c5c5c;
         padding: 0 1;
         text-align: center;
+        overflow: hidden;
     }
     """

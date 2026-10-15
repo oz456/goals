@@ -45,3 +45,29 @@ class Goal:
             title=data.get("title", "Untitled Goal"),
             items=items,
         )
+
+
+@dataclass
+class Workspace:
+    """A window / workspace containing major goals and their tasks."""
+    title: str = "Main"
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
+    goals: List[Goal] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "goals": [g.to_dict() for g in self.goals],
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Workspace":
+        raw_goals = data.get("goals", [])
+        goals = [Goal.from_dict(g) for g in raw_goals]
+        return cls(
+            id=data.get("id", uuid.uuid4().hex[:8]),
+            title=data.get("title", "Main"),
+            goals=goals,
+        )
+

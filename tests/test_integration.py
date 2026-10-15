@@ -14,7 +14,7 @@ async def test_goals():
         test_file = Path(tmpdir) / "test_goals.json"
         storage = Storage(test_file)
 
-        # Seed test data
+        # Seed test data in old format to verify auto-migration
         initial_goals = [
             Goal(
                 title="Goal 1",
@@ -118,8 +118,119 @@ async def test_goals():
             assert len(pilot.app.goals) == initial_goals_count - 1
             print("[15] Quick 'dd' successfully deleted item!")
 
-            print("\nAll 15 integration tests passed successfully!")
+            # --- Multi-Window / Workspace Tabs (Herdr style) ---
+            # [16] Verify initial workspace tab
+            assert len(pilot.app.workspaces) == 1
+            assert pilot.app.workspaces[0].title == "Main"
+            assert pilot.app.active_ws_idx == 0
+            print("[16] Default workspace tab 'Main' loaded correctly.")
+
+            # [17] Test New Window creation via alt+t
+            await pilot.press("alt+t")
+            tab_inp = pilot.app.query_one("#tab-input")
+            assert tab_inp.has_focus
+            tab_inp.value = "Personal"
+            await pilot.press("enter")
+            await pilot.pause()
+            assert len(pilot.app.workspaces) == 2
+            assert pilot.app.active_ws_idx == 1
+            assert pilot.app.current_workspace.title == "Personal"
+            print("[17] Alt+t successfully created new window 'Personal'!")
+
+            # [18] Add goal inside new workspace 'Personal'
+            await pilot.press("n")
+            g_inp = pilot.app.query_one("#goals-input")
+            g_inp.value = "Morning Run"
+            await pilot.press("enter")
+            await pilot.pause()
+            assert len(pilot.app.goals) == 1
+            assert pilot.app.goals[0].title == "Morning Run"
+            print("[18] Successfully added new goal to 'Personal' window.")
+
+            # [19] Test Alt+1 switches to Window 1 ('Main')
+            await pilot.press("alt+1")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 0
+            assert pilot.app.current_workspace.title == "Main"
+            assert "Morning Run" not in [g.title for g in pilot.app.goals]
+            print("[19] Alt+1 switched back to 'Main', isolation verified!")
+
+            # [20] Test Alt+2 switches to Window 2 ('Personal')
+            await pilot.press("alt+2")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 1
+            assert pilot.app.current_workspace.title == "Personal"
+            assert pilot.app.goals[0].title == "Morning Run"
+            print("[20] Alt+2 switched to 'Personal' window.")
+
+            # [21] Test Alt+Shift+Left rearranges tabs
+            await pilot.press("alt+shift+left")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 0
+            assert pilot.app.workspaces[0].title == "Personal"
+            assert pilot.app.workspaces[1].title == "Main"
+            print("[21] Alt+Shift+Left successfully rearranged tabs!")
+
+            # [22] Test Alt+r renames active window
+            await pilot.press("alt+r")
+            tab_inp = pilot.app.query_one("#tab-input")
+            assert tab_inp.has_focus
+            tab_inp.value = "Fitness"
+            await pilot.press("enter")
+            await pilot.pause()
+            assert pilot.app.workspaces[0].title == "Fitness"
+            print("[22] Alt+r successfully renamed window to 'Fitness'!")
+
+            # [23] Test Alt+w closes active window
+            await pilot.press("alt+w")
+            await pilot.pause()
+            assert len(pilot.app.workspaces) == 1
+            assert pilot.app.current_workspace.title == "Main"
+            print("[23] Alt+w successfully closed window, keeping 'Main'!")
+
+            # [24] Test Alt+w does not close last remaining window
+            await pilot.press("alt+w")
+            await pilot.pause()
+            assert len(pilot.app.workspaces) == 1
+            print("[24] Safe close prevented deleting last remaining window.")
+
+            # Create second tab again to test additional shortcuts
+            await pilot.press("alt+t")
+            t_inp = pilot.app.query_one("#tab-input")
+            t_inp.value = "Projects"
+            await pilot.press("enter")
+            await pilot.pause()
+            assert len(pilot.app.workspaces) == 2
+            assert pilot.app.active_ws_idx == 1
+
+            # [25] Test '[' and ']' bracket keys to cycle tabs
+            await pilot.press("left_square_bracket")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 0
+            await pilot.press("right_square_bracket")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 1
+            print("[25] '[' and ']' successfully cycled tabs!")
+
+            # [26] Test Alt+Left and Alt+Right to switch tabs
+            await pilot.press("alt+left")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 0
+            await pilot.press("alt+right")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 1
+            print("[26] Alt+Left and Alt+Right successfully switched tabs!")
+
+            # [27] Test Alt+H and Alt+L to rearrange tabs
+            await pilot.press("alt+H")
+            await pilot.pause()
+            assert pilot.app.active_ws_idx == 0
+            assert pilot.app.workspaces[0].title == "Projects"
+            print("[27] Alt+H successfully swapped active tab position!")
+
+            print("\nAll 27 integration tests passed successfully!")
 
 
 if __name__ == "__main__":
     asyncio.run(test_goals())
+
