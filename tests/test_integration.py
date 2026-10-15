@@ -2,13 +2,13 @@ import asyncio
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from toru.ui.app import ToruApp
+from work.ui.app import WorkApp
 
 
-async def test_toru():
-    app = ToruApp()
+async def test_work():
+    app = WorkApp()
     async with app.run_test() as pilot:
-        print("[1] Toru app mounted successfully!")
+        print("[1] Work app mounted successfully!")
 
         # Verify initial widgets
         assert pilot.app.query_one("#projects-list") is not None
@@ -90,4 +90,4 @@ async def test_toru():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_toru())
+    asyncio.run(test_work())

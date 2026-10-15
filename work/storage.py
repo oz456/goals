@@ -7,15 +7,16 @@ from datetime import date, timedelta
 
 from .models import Project, Task, Subtask, Priority
 
-DEFAULT_DATA_DIR = Path.home() / ".local" / "share" / "toru"
+DEFAULT_DATA_DIR = Path.home() / ".local" / "share" / "work"
 DEFAULT_DATA_FILE = DEFAULT_DATA_DIR / "data.json"
+OLD_TORU_DATA_FILE = Path.home() / ".local" / "share" / "toru" / "data.json"
 
 
 def get_default_seed() -> Tuple[List[Project], List[Task]]:
     """Seed data for initial launch."""
     projects = [
         Project(id="inbox", name="Inbox", icon="📥", color="#89b4fa"),
-        Project(id="work", name="Work", icon="💼", color="#f9e2af"),
+        Project(id="general", name="General", icon="💼", color="#f9e2af"),
         Project(id="personal", name="Personal", icon="🏠", color="#a6e3a1"),
     ]
 
@@ -25,7 +26,7 @@ def get_default_seed() -> Tuple[List[Project], List[Task]]:
     tasks = [
         Task(
             project_id="inbox",
-            title="Welcome to Toru! Press [Space] to complete me",
+            title="Welcome to Work! Press [Space] to complete me",
             completed=False,
             priority=Priority.HIGH,
             due_date=today.isoformat(),
@@ -96,6 +97,16 @@ class Storage:
 
     def load(self) -> Tuple[List[Project], List[Task]]:
         if not self.data_path.exists():
+            if OLD_TORU_DATA_FILE.exists():
+                try:
+                    with open(OLD_TORU_DATA_FILE, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    projects = [Project.from_dict(p) for p in data.get("projects", [])]
+                    tasks = [Task.from_dict(t) for t in data.get("tasks", [])]
+                    self.save(projects, tasks)
+                    return projects, tasks
+                except Exception:
+                    pass
             projects, tasks = get_default_seed()
             self.save(projects, tasks)
             return projects, tasks

@@ -590,7 +590,7 @@ class HelpModal(ModalScreen[None]):
 [bold #f9e2af]🔍 SEARCH & GENERAL[/]
   [b]/[/]                         Open live filter/search bar
   [b]?[/]                         Toggle this Help cheatsheet
-  [b]q[/]                         Quit Toru cleanly
+  [b]q[/]                         Quit Work cleanly
 
 [bold #cba6f7]📅 DUE DATE SYNTAX[/]
   Works with friendly terms: [b]today[/], [b]tomorrow[/], [b]friday[/], [b]+2d[/], [b]1w[/], [b]none[/]
@@ -598,7 +598,7 @@ class HelpModal(ModalScreen[None]):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="help-dialog"):
-            yield Label("TORU Quick Reference", id="help-title")
+            yield Label("WORK Quick Reference", id="help-title")
             with Vertical(id="help-content"):
                 yield Static(self.HELP_TEXT)
             with Horizontal(classes="buttons-row"):

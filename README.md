@@ -1,4 +1,4 @@
-# Toru (取る)
+# Work
 
 An intuitive, modern, dual-pane project & task manager for the terminal. Built with [Textual](https://textual.textualize.io/).
 
@@ -43,5 +43,5 @@ An intuitive, modern, dual-pane project & task manager for the terminal. Built w
 
 All your data is saved automatically and atomically as clean JSON in:
 ```
-~/.local/share/toru/data.json
+~/.local/share/work/data.json
 ```

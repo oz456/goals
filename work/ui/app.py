@@ -21,8 +21,8 @@ from .screens import (
 )
 
 
-class ToruApp(App):
-    """Toru - Intuitive dual-pane project & task manager."""
+class WorkApp(App):
+    """Work - Intuitive dual-pane project & task manager."""
 
     CSS = """
     Screen {
@@ -154,7 +154,7 @@ class ToruApp(App):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="app-header"):
-            yield Static("[bold #cba6f7]TORU[/] [dim]• focused task manager[/]", id="header-brand")
+            yield Static("[bold #cba6f7]WORK[/] [dim]• focused task manager[/]", id="header-brand")
             yield Static("0 / 0 Done", id="header-stats")
 
         with Container(id="search-container"):
