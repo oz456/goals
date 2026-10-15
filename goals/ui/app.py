@@ -224,21 +224,21 @@ class GoalsApp(App):
         accent = self.omarchy.get("accent", "#e63946")
         dark_bg = self.omarchy.get("dark_background", "#080808")
         selection = self.omarchy.get("selection", "#343d41")
-        fg = self.omarchy.get("foreground", "#f5f5f5")
+        muted = self.omarchy.get("muted", "#5c5c5c")
 
         parts = []
         for idx, ws in enumerate(self.workspaces):
-            num = idx + 1
             title = escape(ws.title)
             if idx == self.active_ws_idx:
-                # Active tab: Herdr panel_bg on accent background, clean uniform pill
-                parts.append(f"[@click=app.switch_tab({idx})][bold {dark_bg} on {accent}] {num}:{title} [/][/]")
+                # Active tab: Herdr panel_bg on accent background
+                parts.append(f"[@click=app.switch_tab({idx})][bold {dark_bg} on {accent}] {title} [/][/]")
             else:
-                # Inactive tab: clean uniform surface pill
-                parts.append(f"[@click=app.switch_tab({idx})][{fg} on {selection}] {num}:{title} [/][/]")
+                # Inactive tab: clean muted text
+                parts.append(f"[@click=app.switch_tab({idx})][{muted}] {title} [/][/]")
 
-        # NO plus button! Clean 2-space gap between tabs
-        tabs_widget.update("  ".join(parts))
+        # Pure Herdr style: clean names separated by vertical border divider, no index prefixes
+        divider = f"[{selection}]│[/]"
+        tabs_widget.update(divider.join(parts))
 
     def refresh_goals_list(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)
