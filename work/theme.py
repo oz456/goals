@@ -21,6 +21,14 @@ FALLBACK_THEME = {
 }
 
 
+def get_theme_mtime() -> float:
+    """Return mtime of theme file to detect live changes."""
+    try:
+        return THEME_FILE.stat().st_mtime
+    except Exception:
+        return 0.0
+
+
 def load_theme() -> Dict[str, str]:
     """Load colors from active Omarchy theme, or fallback to default."""
     if THEME_FILE.exists():
@@ -36,114 +44,88 @@ def load_theme() -> Dict[str, str]:
 
 
 def generate_css(theme: Dict[str, str]) -> str:
-    """Generate minimal, modern Textual CSS respecting Omarchy theme."""
-    bg = theme["background"]
-    dark_bg = theme["dark_background"]
-    lighter_bg = theme["lighter_background"]
-    fg = theme["foreground"]
-    muted = theme["muted"]
-    accent = theme["accent"]
-    selection = theme["selection"]
-    green = theme["green"]
+    """Base layout structure for Textual."""
+    return """
+    Screen {
+        background: #0d0d0d;
+        color: #f5f5f5;
+    }
 
-    return f"""
-    Screen {{
-        background: {bg};
-        color: {fg};
-    }}
-
-    #top-bar {{
+    #top-bar {
         height: 2;
         dock: top;
-        background: {dark_bg};
+        background: #080808;
         padding: 0 2;
-        color: {muted};
-    }}
+        content-align: left middle;
+    }
 
-    #top-brand {{
+    #top-brand {
         text-style: bold;
-        color: {accent};
-    }}
+        color: #e63946;
+    }
 
-    #top-stats {{
-        dock: right;
-        color: {muted};
-    }}
-
-    #main-container {{
+    #main-container {
         height: 1fr;
         padding: 0 1;
-    }}
+    }
 
-    #goals-pane {{
+    #goals-pane {
         width: 38%;
         height: 100%;
-        border: solid {lighter_bg};
-        background: {bg};
+        border: solid #1a1a1a;
+        background: #0d0d0d;
         padding: 0 1;
         margin-right: 1;
-    }}
+    }
 
-    #goals-pane:focus-within {{
-        border: solid {accent};
-    }}
-
-    #workspace-pane {{
+    #workspace-pane {
         width: 62%;
         height: 100%;
-        border: solid {lighter_bg};
-        background: {bg};
+        border: solid #1a1a1a;
+        background: #0d0d0d;
         padding: 0 1;
-    }}
+    }
 
-    #workspace-pane:focus-within {{
-        border: solid {accent};
-    }}
-
-    .pane-header {{
+    .pane-header {
         height: 2;
-        color: {muted};
+        color: #5c5c5c;
         text-style: bold;
         padding: 0 1;
-        border-bottom: solid {lighter_bg};
+        border-bottom: solid #1a1a1a;
         margin-bottom: 1;
-    }}
+    }
 
-    .pane-header-active {{
-        color: {accent};
-    }}
-
-    OptionList {{
+    OptionList {
         height: 1fr;
         background: transparent;
         border: none;
         padding: 0;
-    }}
+    }
 
-    OptionList:focus {{
+    OptionList:focus {
         border: none;
-    }}
+    }
 
-    .inline-input {{
+    .inline-input {
         height: 3;
         dock: bottom;
-        background: {dark_bg};
-        border: tall {accent};
-        color: {fg};
+        background: #080808;
+        border: tall #e63946;
+        color: #f5f5f5;
         display: none;
         margin-bottom: 1;
-    }}
+    }
 
-    .inline-input.active {{
+    .inline-input.active {
         display: block;
-    }}
+    }
 
-    #bottom-bar {{
+    #bottom-bar {
         height: 1;
         dock: bottom;
-        background: {dark_bg};
-        color: {muted};
+        background: #080808;
+        color: #5c5c5c;
         padding: 0 2;
         text-align: center;
-    }}
+    }
     """

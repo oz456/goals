@@ -2,13 +2,14 @@ from typing import List, Optional
 from rich.markup import escape
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, Input, Label
 from textual.widgets.option_list import Option
+from textual.events import DescendantFocus
 
 from ..models import Goal, GoalItem
 from ..storage import Storage
-from ..theme import load_theme, generate_css
+from ..theme import load_theme, generate_css, get_theme_mtime
 from .widgets import GoalsListWidget, WorkspaceListWidget
 
 
@@ -33,15 +34,15 @@ class WorkApp(App):
     def __init__(self):
         super().__init__()
         self.omarchy = load_theme()
+        self.last_theme_mtime = get_theme_mtime()
         self.storage = Storage()
         self.goals: List[Goal] = []
         self.active_goal_idx: int = 0
-        self.editing_mode: Optional[str] = None  # None, "new_goal", "edit_goal", "new_item", "edit_item"
+        self.editing_mode: Optional[str] = None
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top-bar"):
             yield Static("toru", id="top-brand")
-            yield Static("0/0 done", id="top-stats")
 
         with Horizontal(id="main-container"):
             with Vertical(id="goals-pane"):
@@ -64,23 +65,92 @@ class WorkApp(App):
         if not self.goals:
             self.goals = [Goal(title="Main Goal", items=[])]
 
+        self.apply_theme()
         self.refresh_goals_list()
         self.refresh_workspace_list()
-        self.update_stats()
+
+        # Watch for live Omarchy theme changes every 500ms
+        self.set_interval(0.5, self.check_theme_update)
 
         # Start focused on goals list
         self.query_one("#goals-list", GoalsListWidget).focus()
+
+    def check_theme_update(self) -> None:
+        """Poll theme file mtime and update live if changed."""
+        current_mtime = get_theme_mtime()
+        if current_mtime != self.last_theme_mtime:
+            self.last_theme_mtime = current_mtime
+            self.apply_theme()
+
+    def apply_theme(self) -> None:
+        """Apply active Omarchy theme colors across all widgets dynamically."""
+        theme = load_theme()
+        self.omarchy = theme
+
+        bg = theme["background"]
+        dark_bg = theme["dark_background"]
+        lighter_bg = theme["lighter_background"]
+        fg = theme["foreground"]
+        muted = theme["muted"]
+        accent = theme["accent"]
+
+        self.screen.styles.background = bg
+        self.screen.styles.color = fg
+
+        try:
+            self.query_one("#top-bar").styles.background = dark_bg
+            self.query_one("#top-bar").styles.color = muted
+            self.query_one("#top-brand").styles.color = accent
+
+            self.query_one("#goals-pane").styles.background = bg
+            self.query_one("#workspace-pane").styles.background = bg
+
+            self.query_one("#goals-header").styles.color = muted
+            self.query_one("#goals-header").styles.border_bottom = ("solid", lighter_bg)
+
+            self.query_one("#workspace-header").styles.border_bottom = ("solid", lighter_bg)
+
+            self.query_one("#goals-input").styles.background = dark_bg
+            self.query_one("#goals-input").styles.border = ("tall", accent)
+            self.query_one("#goals-input").styles.color = fg
+
+            self.query_one("#workspace-input").styles.background = dark_bg
+            self.query_one("#workspace-input").styles.border = ("tall", accent)
+            self.query_one("#workspace-input").styles.color = fg
+
+            self.query_one("#bottom-bar").styles.background = dark_bg
+            self.query_one("#bottom-bar").styles.color = muted
+
+            self.update_pane_borders()
+            self.refresh_goals_list()
+            self.refresh_workspace_list()
+        except Exception:
+            pass
+
+    def update_pane_borders(self) -> None:
+        """Highlight active pane with Omarchy accent color."""
+        try:
+            g_pane = self.query_one("#goals-pane")
+            w_pane = self.query_one("#workspace-pane")
+            accent = self.omarchy["accent"]
+            lighter_bg = self.omarchy["lighter_background"]
+
+            if g_pane.has_focus_within:
+                g_pane.styles.border = ("solid", accent)
+                w_pane.styles.border = ("solid", lighter_bg)
+            else:
+                w_pane.styles.border = ("solid", accent)
+                g_pane.styles.border = ("solid", lighter_bg)
+        except Exception:
+            pass
+
+    def on_descendant_focus(self, event: DescendantFocus) -> None:
+        self.update_pane_borders()
 
     def get_current_goal(self) -> Optional[Goal]:
         if 0 <= self.active_goal_idx < len(self.goals):
             return self.goals[self.active_goal_idx]
         return None
-
-    def update_stats(self) -> None:
-        total = sum(len(g.items) for g in self.goals)
-        completed = sum(sum(1 for it in g.items if it.done) for g in self.goals)
-        top_stats = self.query_one("#top-stats", Static)
-        top_stats.update(f"{completed}/{total} done")
 
     def refresh_goals_list(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)
@@ -88,14 +158,10 @@ class WorkApp(App):
         g_list.clear_options()
 
         accent = self.omarchy["accent"]
-        muted = self.omarchy["muted"]
 
         for idx, g in enumerate(self.goals):
-            done_count = sum(1 for it in g.items if it.done)
-            total_count = len(g.items)
-            counter = f"[{muted}]({done_count}/{total_count})[/]" if total_count > 0 else ""
-            prefix = "› " if idx == self.active_goal_idx else "  "
-            line = f"{prefix}[bold]{escape(g.title)}[/] {counter}"
+            prefix = f"[{accent}]›[/] " if idx == self.active_goal_idx else "  "
+            line = f"{prefix}[bold]{escape(g.title)}[/]"
             g_list.add_option(Option(line, id=g.id))
 
         if old_highlighted is not None and old_highlighted < len(self.goals):
@@ -122,7 +188,7 @@ class WorkApp(App):
         header.update(f"[{accent}]› {escape(current_goal.title).upper()}[/]")
 
         if not current_goal.items:
-            w_list.add_option(Option("[dim italic]No short-term goals yet. Press [b]n[/b] to add one.[/]", disabled=True))
+            w_list.add_option(Option(f"[{muted} italic]No short-term goals yet. Press 'n' to add one.[/]", disabled=True))
             return
 
         for it in current_goal.items:
@@ -159,6 +225,7 @@ class WorkApp(App):
         w_list.focus()
         if w_list.option_count > 0:
             w_list.highlighted = 0
+        self.update_pane_borders()
 
     def action_exit_workspace(self) -> None:
         """Step back out to major goals."""
@@ -167,6 +234,7 @@ class WorkApp(App):
             return
         g_list = self.query_one("#goals-list", GoalsListWidget)
         g_list.focus()
+        self.update_pane_borders()
 
     def action_toggle_pane(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)
@@ -200,7 +268,6 @@ class WorkApp(App):
             self.storage.save(self.goals)
             self.refresh_workspace_list()
             self.refresh_goals_list()
-            self.update_stats()
 
     def action_new_item(self) -> None:
         g_list = self.query_one("#goals-list", GoalsListWidget)
@@ -257,7 +324,6 @@ class WorkApp(App):
             self.storage.save(self.goals)
             self.refresh_goals_list()
             self.refresh_workspace_list()
-            self.update_stats()
         else:
             current_goal = self.get_current_goal()
             if not current_goal or not current_goal.items:
@@ -269,7 +335,6 @@ class WorkApp(App):
                 self.storage.save(self.goals)
                 self.refresh_workspace_list()
                 self.refresh_goals_list()
-                self.update_stats()
                 if current_goal.items:
                     w_list.highlighted = min(idx, len(current_goal.items) - 1)
 
@@ -286,9 +351,7 @@ class WorkApp(App):
             self.storage.save(self.goals)
             self.refresh_goals_list()
             self.refresh_workspace_list()
-            self.update_stats()
             self._close_inline_input()
-            # Jump straight into the new goal's workspace!
             self.action_enter_workspace()
 
         elif self.editing_mode == "edit_goal":
@@ -307,9 +370,7 @@ class WorkApp(App):
                 self.storage.save(self.goals)
                 self.refresh_workspace_list()
                 self.refresh_goals_list()
-                self.update_stats()
                 event.input.value = ""
-                # Keep input open to type next item quickly!
 
         elif self.editing_mode == "edit_item":
             current_goal = self.get_current_goal()
@@ -334,6 +395,7 @@ class WorkApp(App):
             self.query_one("#goals-list", GoalsListWidget).focus()
         else:
             self.query_one("#workspace-list", WorkspaceListWidget).focus()
+        self.update_pane_borders()
 
     def action_quit_app(self) -> None:
         self.exit()
